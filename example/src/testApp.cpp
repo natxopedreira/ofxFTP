@@ -3,8 +3,8 @@
 //--------------------------------------------------------------
 void testApp::setup(){
 
-    client.setup("<yourhost>","<username>","<passwork>");
-    client.setVerbose(true);
+    clientFtp.setupServer("192.168.1.34", "daemon", "xampp");
+    clientFtp.startThread();
 }       
 
 //--------------------------------------------------------------
@@ -15,25 +15,17 @@ void testApp::update(){
 //--------------------------------------------------------------
 void testApp::draw(){
 
+    ofDrawBitmapStringHighlight("UPLOADED FILES " + ofToString(clientFtp.getUploadCount()), ofPoint(50,50));
+}
+
+//--------------------------------------------------------------
+void testApp::exit(){
+    clientFtp.waitForThread();
 }
 
 //--------------------------------------------------------------
 void testApp::keyPressed(int key){
-
-    if(key=='1')
-    {
-    if(client.send("<filename>","<localpath>","<remotepath>")>0)
-    {
-        printf("Send file to server success\n\n");
-    }
-    }
-    if(key=='2')
-    {
-    if(client.get("<filename>","<localpath>","<remotepath>")>0)
-    {
-        printf("get file to server success\n\n");
-    }
-    }
+    
 }
 
 //--------------------------------------------------------------
@@ -77,6 +69,7 @@ void testApp::dragEvent(ofDragInfo dragInfo){
     {
         ofFile file(dragInfo.files[i]);
         string path = file.path().substr(0,file.path().length()-file.getFileName().length());
-        client.send(file.getFileName(),path,"/");
+        clientFtp.addFileToUpload(file.getFileName(), "/", path);
+       
     }
 }
